@@ -142,6 +142,26 @@
 
   .option:active { transform: scale(.99); }
 
+  .option.selected {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    font-weight: 600;
+  }
+
+  .option.selected::after {
+    content: '\2713';
+    float: right;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .multi-hint {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    margin: -14px 0 18px;
+  }
+
   .field::placeholder { color: #9ca3af; }
   .field:focus { border-color: var(--accent); outline: none; }
 
@@ -203,6 +223,22 @@
     font-weight: 500;
   }
 
+  .tagline {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 18px;
+  }
+
+  .footer {
+    font-size: 10px;
+    font-weight: 500;
+    color: #9ca3af;
+    text-align: center;
+    margin-top: 40px;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .option, .progress-bar, .submit { transition: none; }
     .step.active { animation: none; }
@@ -229,11 +265,13 @@
 
     <div class="step" data-step="2">
       <p class="question" id="q2">What kind of debts are you looking to consolidate?</p>
-      <button class="option" onclick="answer('debts','Credit card')">Credit card</button>
-      <button class="option" onclick="answer('debts','Car loan')">Car loan</button>
-      <button class="option" onclick="answer('debts','Personal loan')">Personal loan</button>
-      <button class="option" onclick="answer('debts','Payday loans')">Payday loans</button>
-      <button class="option" onclick="answer('debts','Other')">Other</button>
+      <p class="multi-hint">Select all that apply</p>
+      <button class="option" onclick="toggleDebt(this,'Credit card')">Credit card</button>
+      <button class="option" onclick="toggleDebt(this,'Car loan')">Car loan</button>
+      <button class="option" onclick="toggleDebt(this,'Personal loan')">Personal loan</button>
+      <button class="option" onclick="toggleDebt(this,'Payday loans')">Payday loans</button>
+      <button class="option" onclick="toggleDebt(this,'Other')">Other</button>
+      <button class="submit" onclick="submitDebts()">Continue</button>
     </div>
 
     <div class="step" data-step="3">
@@ -282,6 +320,10 @@
     </div>
   </div>
 
+  <p class="tagline">We've helped 100's of Aussies get their finances back on track!</p>
+
+  <p class="footer">&copy; Goal Finance. All Rights Reserved.</p>
+
 <script>
   var current = 1;
   var total = 7;
@@ -315,6 +357,25 @@
     if (!stepHistory.length) return;
     current = stepHistory.pop();
     render();
+  }
+
+  var selectedDebts = [];
+
+  function toggleDebt(btn, value) {
+    var i = selectedDebts.indexOf(value);
+    if (i === -1) {
+      selectedDebts.push(value);
+      btn.classList.add('selected');
+    } else {
+      selectedDebts.splice(i, 1);
+      btn.classList.remove('selected');
+    }
+  }
+
+  function submitDebts() {
+    if (!selectedDebts.length) { alert('Please select at least one debt type.'); return; }
+    answers.debts = selectedDebts.join(', ');
+    goTo(3);
   }
 
   function submitName() {

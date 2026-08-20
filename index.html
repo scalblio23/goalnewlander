@@ -281,7 +281,7 @@
 <script>
   var current = 1;
   var total = 7;
-  var history = [];
+  var stepHistory = [];
   var bar = document.getElementById('bar');
   var stepCount = document.getElementById('stepCount');
   var backBtn = document.getElementById('backBtn');
@@ -297,19 +297,19 @@
     } else {
       bar.style.width = ((current - 1) / (total - 1) * 100) + '%';
       stepCount.textContent = 'Step ' + current + ' of ' + (total - 1);
-      backBtn.classList.toggle('show', history.length > 0);
+      backBtn.classList.toggle('show', stepHistory.length > 0);
     }
   }
 
   function goTo(step) {
-    history.push(current);
+    stepHistory.push(current);
     current = step;
     render();
   }
 
   function goBack() {
-    if (!history.length) return;
-    current = history.pop();
+    if (!stepHistory.length) return;
+    current = stepHistory.pop();
     render();
   }
 

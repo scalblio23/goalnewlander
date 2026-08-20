@@ -56,7 +56,10 @@
     max-width: 540px;
     margin-top: 40px;
     padding: 36px 32px 32px;
+    transition: max-width .3s ease;
   }
+
+  .card-booking { max-width: 820px; }
 
   .card-top {
     display: flex;
@@ -270,8 +273,8 @@
         </svg>
       </div>
       <p class="final" id="congrats">Congrats, it looks like we can help! Book in a free 10 minute call with our specialist to discuss your options &mdash; we can help!</p>
-      <a class="submit" href="YOUR_BOOKING_LINK">Book my free call</a>
-      <p class="hint">No cost. No obligation.</p>
+      <p class="hint">No cost. No obligation. Pick a time below.</p>
+      <iframe id="tuYSeKsHzMeQ4V5SDpA2_1787193419184" allow="payment" style="width:100%;border:none;overflow:hidden;min-height:620px;margin-top:16px;" scrolling="no" title="Book your free call"></iframe>
     </div>
 
     <div class="step" data-step="disqualified">
@@ -330,8 +333,23 @@
       // fetch('YOUR_WEBHOOK_URL', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(answers) });
       var c = document.getElementById('congrats');
       c.textContent = 'Congrats ' + (answers.name || '') + ', it looks like we can help! Book in a free 10 minute call with our specialist to discuss your options \u2014 we can help!';
+      loadBookingCalendar();
     }
     goTo(current + 1);
+  }
+
+  function loadBookingCalendar() {
+    var frame = document.getElementById('tuYSeKsHzMeQ4V5SDpA2_1787193419184');
+    if (frame.src) return;
+    var params = new URLSearchParams();
+    if (answers.name) params.set('first_name', answers.name);
+    if (answers.debts) params.set('debt_type', answers.debts);
+    if (answers.employment) params.set('employment', answers.employment);
+    if (answers.income) params.set('household_income', answers.income);
+    if (answers.mortgage) params.set('mortgage', answers.mortgage);
+    if (answers.mortgageSize) params.set('mortgage_size', answers.mortgageSize);
+    frame.src = 'https://api.leadconnectorhq.com/widget/booking/tuYSeKsHzMeQ4V5SDpA2?' + params.toString();
+    document.querySelector('.card').classList.add('card-booking');
   }
 
   function disqualify(key, value) {
@@ -341,6 +359,7 @@
 
   render();
 </script>
+<script src="https://link.msgsndr.com/js/form_embed.js" type="text/javascript"></script>
 
 </body>
 </html>

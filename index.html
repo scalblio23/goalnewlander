@@ -272,8 +272,8 @@
           <path d="M20 6L9 17L4 12" stroke="#0e9f6e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <p class="final" id="congrats">Congrats, it looks like we can help! Book in a free 10 minute call with our specialist to discuss your options &mdash; we can help!</p>
-      <p class="hint">No cost. No obligation. Pick a time below.</p>
+      <p class="final" id="congrats">Congrats, we can help! Book a time below to start saving on your repayments today!</p>
+      <p class="hint">No cost. No obligation.</p>
       <iframe id="tuYSeKsHzMeQ4V5SDpA2_1787193419184" allow="payment" style="width:100%;border:none;overflow:hidden;min-height:620px;margin-top:16px;" scrolling="no" title="Book your free call"></iframe>
     </div>
 
@@ -332,7 +332,7 @@
       // Send lead here (webhook/CRM endpoint):
       // fetch('YOUR_WEBHOOK_URL', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(answers) });
       var c = document.getElementById('congrats');
-      c.textContent = 'Congrats ' + (answers.name || '') + ', it looks like we can help! Book in a free 10 minute call with our specialist to discuss your options \u2014 we can help!';
+      c.textContent = 'Congrats' + (answers.name ? ' ' + answers.name : '') + ', we can help! Book a time below to start saving on your repayments today!';
       loadBookingCalendar();
     }
     goTo(current + 1);

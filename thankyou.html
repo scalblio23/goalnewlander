@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Call Is Booked</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #0e9f6e;
+    --accent-soft: #e6f6f0;
+    --text: #111;
+    --muted: #6b7280;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Montserrat', Arial, sans-serif;
+    background: #eceef0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(17, 24, 39, 0.10);
+    width: 100%;
+    max-width: 540px;
+    padding: 48px 32px 44px;
+    text-align: center;
+    animation: fadeIn .25s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .badge {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 22px;
+  }
+
+  .badge svg { width: 36px; height: 36px; }
+
+  h1 {
+    font-weight: 800;
+    font-size: clamp(24px, 5vw, 32px);
+    color: var(--text);
+    line-height: 1.25;
+    text-wrap: balance;
+  }
+
+  .message {
+    font-weight: 500;
+    font-size: 17px;
+    color: var(--muted);
+    line-height: 1.55;
+    margin-top: 14px;
+    text-wrap: balance;
+  }
+
+  .tagline {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 18px;
+  }
+
+  .footer {
+    font-size: 10px;
+    font-weight: 500;
+    color: #9ca3af;
+    text-align: center;
+    margin-top: 40px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="badge">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 6L9 17L4 12" stroke="#0e9f6e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h1>Congrats, your call is booked!</h1>
+    <p class="message">We will call you at your chosen time. Keep your phone handy &mdash; we look forward to speaking with you!</p>
+  </div>
+
+  <p class="tagline">We've helped 100's of Aussies get their finances back on track!</p>
+
+  <p class="footer">&copy; Goal Finance. All Rights Reserved.</p>
+
+</body>
+</html>

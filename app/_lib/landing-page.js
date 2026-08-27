@@ -2,20 +2,29 @@
 // whether the Vimeo video embed is included (`includeVideo`) — everything
 // else (copy, styling, survey flow, booking widget) is byte-for-byte
 // identical between variants and untouched from the current production page.
+//
+// This page is meant to be pasted as a fragment into third-party page
+// builders (e.g. a GHL "Custom HTML" element), which typically discard the
+// outer <html>/<head>/<body> tags and keep only the inner content, and
+// which may already define their own generic class names (.card, .badge,
+// .footer, etc.) on the same page. So every class name here is prefixed
+// uniquely ("gf-lp-...") rather than relying on ancestor scoping or CSS
+// specificity alone — verified against an adversarial test where a host
+// page defines colliding class names with `!important` rules.
 
 function videoBlock() {
-  return `  <div class="video-embed">
-    <div class="video-ratio">
-      <iframe src="https://player.vimeo.com/video/1221692348?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479&amp;autoplay=1&amp;muted=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="GoalFinance"></iframe>
+  return `    <div class="gf-lp-video-embed">
+      <div class="gf-lp-video-ratio">
+        <iframe src="https://player.vimeo.com/video/1221692348?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479&amp;autoplay=1&amp;muted=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="GoalFinance"></iframe>
+      </div>
     </div>
-  </div>
 
 `;
 }
 
 function videoStyles() {
   return `
-  .video-embed {
+  .gf-lp .gf-lp-video-embed {
     width: 100%;
     max-width: 640px;
     margin: 28px auto 0;
@@ -24,12 +33,12 @@ function videoStyles() {
     box-shadow: 0 10px 40px rgba(17, 24, 39, 0.10);
   }
 
-  .video-embed .video-ratio {
+  .gf-lp .gf-lp-video-embed .gf-lp-video-ratio {
     padding: 56.6% 0 0 0;
     position: relative;
   }
 
-  .video-embed iframe {
+  .gf-lp .gf-lp-video-embed iframe {
     position: absolute;
     top: 0;
     left: 0;
@@ -53,18 +62,18 @@ export function renderLandingPage(variant) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --accent: #0e9f6e;
-    --accent-dark: #0b7f58;
-    --accent-soft: #e6f6f0;
-    --border: #e2e5e9;
-    --text: #111;
-    --muted: #6b7280;
+  .gf-lp {
+    --gf-lp-accent: #0e9f6e;
+    --gf-lp-accent-dark: #0b7f58;
+    --gf-lp-accent-soft: #e6f6f0;
+    --gf-lp-border: #e2e5e9;
+    --gf-lp-text: #111;
+    --gf-lp-muted: #6b7280;
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  .gf-lp, .gf-lp * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  body {
+  .gf-lp {
     font-family: 'Montserrat', Arial, sans-serif;
     background: #eceef0;
     min-height: 100vh;
@@ -75,7 +84,7 @@ export function renderLandingPage(variant) {
     padding: 32px 20px;
   }
 
-  .headline {
+  .gf-lp .gf-lp-headline {
     color: #000;
     font-weight: 800;
     font-size: clamp(28px, 5vw, 46px);
@@ -85,15 +94,15 @@ export function renderLandingPage(variant) {
     max-width: 820px;
   }
 
-  .subline {
-    color: var(--muted);
+  .gf-lp .gf-lp-subline {
+    color: var(--gf-lp-muted);
     font-weight: 500;
     font-size: 13px;
     text-align: center;
     margin-top: 14px;
   }
 
-  .card {
+  .gf-lp .gf-lp-card {
     background: #fff;
     border-radius: 16px;
     box-shadow: 0 10px 40px rgba(17, 24, 39, 0.10);
@@ -104,38 +113,38 @@ export function renderLandingPage(variant) {
     transition: max-width .3s ease;
   }
 
-  .card-booking { max-width: 820px; }
+  .gf-lp .gf-lp-card-booking { max-width: 820px; }
 
-  .card-top {
+  .gf-lp .gf-lp-card-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
   }
 
-  .step-count {
+  .gf-lp .gf-lp-step-count {
     font-size: 12px;
     font-weight: 600;
-    color: var(--muted);
+    color: var(--gf-lp-muted);
     letter-spacing: .04em;
     text-transform: uppercase;
   }
 
-  .back {
+  .gf-lp .gf-lp-back {
     background: none;
     border: none;
     font-family: inherit;
     font-size: 13px;
     font-weight: 600;
-    color: var(--muted);
+    color: var(--gf-lp-muted);
     cursor: pointer;
     padding: 4px;
     visibility: hidden;
   }
-  .back.show { visibility: visible; }
-  .back:hover { color: var(--text); }
+  .gf-lp .gf-lp-back.gf-lp-show { visibility: visible; }
+  .gf-lp .gf-lp-back:hover { color: var(--gf-lp-text); }
 
-  .progress {
+  .gf-lp .gf-lp-progress {
     height: 6px;
     background: #eef0f2;
     border-radius: 3px;
@@ -143,77 +152,77 @@ export function renderLandingPage(variant) {
     overflow: hidden;
   }
 
-  .progress-bar {
+  .gf-lp .gf-lp-progress-bar {
     height: 100%;
     width: 0%;
-    background: var(--accent);
+    background: var(--gf-lp-accent);
     border-radius: 3px;
     transition: width .3s ease;
   }
 
-  .question {
+  .gf-lp .gf-lp-question {
     font-weight: 700;
     font-size: 20px;
-    color: var(--text);
+    color: var(--gf-lp-text);
     margin-bottom: 22px;
     line-height: 1.35;
   }
 
-  .option, .field {
+  .gf-lp .gf-lp-option, .gf-lp .gf-lp-field {
     display: block;
     width: 100%;
-    border: 2px solid var(--border);
+    border: 2px solid var(--gf-lp-border);
     border-radius: 10px;
     padding: 16px 18px;
     font-family: 'Montserrat', Arial, sans-serif;
     font-weight: 500;
     font-size: 16px;
-    color: var(--text);
+    color: var(--gf-lp-text);
     margin-bottom: 12px;
   }
 
-  .option {
+  .gf-lp .gf-lp-option {
     background: #fff;
     text-align: left;
     cursor: pointer;
     transition: border-color .15s, background .15s, transform .1s;
   }
 
-  .option:hover, .option:focus-visible {
-    border-color: var(--accent);
-    background: var(--accent-soft);
+  .gf-lp .gf-lp-option:hover, .gf-lp .gf-lp-option:focus-visible {
+    border-color: var(--gf-lp-accent);
+    background: var(--gf-lp-accent-soft);
     outline: none;
   }
 
-  .option:active { transform: scale(.99); }
+  .gf-lp .gf-lp-option:active { transform: scale(.99); }
 
-  .option.selected {
-    border-color: var(--accent);
-    background: var(--accent-soft);
+  .gf-lp .gf-lp-option.gf-lp-selected {
+    border-color: var(--gf-lp-accent);
+    background: var(--gf-lp-accent-soft);
     font-weight: 600;
   }
 
-  .option.selected::after {
+  .gf-lp .gf-lp-option.gf-lp-selected::after {
     content: '\\2713';
     float: right;
-    color: var(--accent);
+    color: var(--gf-lp-accent);
     font-weight: 700;
   }
 
-  .multi-hint {
+  .gf-lp .gf-lp-multi-hint {
     font-size: 13px;
     font-weight: 500;
-    color: var(--muted);
+    color: var(--gf-lp-muted);
     margin: -14px 0 18px;
   }
 
-  .field::placeholder { color: #9ca3af; }
-  .field:focus { border-color: var(--accent); outline: none; }
+  .gf-lp .gf-lp-field::placeholder { color: #9ca3af; }
+  .gf-lp .gf-lp-field:focus { border-color: var(--gf-lp-accent); outline: none; }
 
-  .submit {
+  .gf-lp .gf-lp-submit {
     display: block;
     width: 100%;
-    background: var(--accent);
+    background: var(--gf-lp-accent);
     color: #fff;
     border: none;
     border-radius: 10px;
@@ -228,55 +237,55 @@ export function renderLandingPage(variant) {
     transition: background .15s;
   }
 
-  .submit:hover, .submit:focus-visible { background: var(--accent-dark); outline: none; }
+  .gf-lp .gf-lp-submit:hover, .gf-lp .gf-lp-submit:focus-visible { background: var(--gf-lp-accent-dark); outline: none; }
 
-  .step { display: none; }
-  .step.active { display: block; animation: fadeIn .25s ease; }
+  .gf-lp .gf-lp-step { display: none; }
+  .gf-lp .gf-lp-step.gf-lp-active { display: block; animation: gf-lp-fade-in .25s ease; }
 
-  @keyframes fadeIn {
+  @keyframes gf-lp-fade-in {
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: none; }
   }
 
-  .final {
+  .gf-lp .gf-lp-final {
     font-weight: 600;
     font-size: 19px;
-    color: var(--text);
+    color: var(--gf-lp-text);
     text-align: center;
     line-height: 1.55;
     margin-bottom: 22px;
   }
 
-  .badge {
+  .gf-lp .gf-lp-badge {
     width: 64px;
     height: 64px;
     border-radius: 50%;
-    background: var(--accent-soft);
+    background: var(--gf-lp-accent-soft);
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 4px auto 18px;
   }
 
-  .badge svg { width: 32px; height: 32px; }
+  .gf-lp .gf-lp-badge svg { width: 32px; height: 32px; }
 
-  .hint {
+  .gf-lp .gf-lp-hint {
     font-size: 13px;
-    color: var(--muted);
+    color: var(--gf-lp-muted);
     text-align: center;
     margin-top: 14px;
     font-weight: 500;
   }
 
-  .tagline {
+  .gf-lp .gf-lp-tagline {
     font-size: 12px;
     font-weight: 600;
-    color: var(--muted);
+    color: var(--gf-lp-muted);
     text-align: center;
     margin-top: 18px;
   }
 
-  .footer {
+  .gf-lp .gf-lp-footer {
     font-size: 10px;
     font-weight: 500;
     color: #9ca3af;
@@ -285,185 +294,189 @@ export function renderLandingPage(variant) {
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .option, .progress-bar, .submit { transition: none; }
-    .step.active { animation: none; }
+    .gf-lp .gf-lp-option, .gf-lp .gf-lp-progress-bar, .gf-lp .gf-lp-submit { transition: none; }
+    .gf-lp .gf-lp-step.gf-lp-active { animation: none; }
   }
 ${includeVideo ? videoStyles() : ''}</style>
 </head>
 <body>
 
-  <h1 class="headline">We'll restructure your debts into one easy payment you can afford</h1>
-  <p class="subline">T+C's Apply</p>
+<div class="gf-lp">
 
-${includeVideo ? videoBlock() : ''}  <div class="card">
-    <div class="card-top">
-      <button class="back" id="backBtn" onclick="goBack()" aria-label="Go back">&larr; Back</button>
-      <span class="step-count" id="stepCount">Step 1 of 6</span>
+  <h1 class="gf-lp-headline">We'll restructure your debts into one easy payment you can afford</h1>
+  <p class="gf-lp-subline">T+C's Apply</p>
+
+${includeVideo ? videoBlock() : ''}  <div class="gf-lp-card">
+    <div class="gf-lp-card-top">
+      <button class="gf-lp-back" id="gf-lp-backBtn" onclick="gfLpGoBack()" aria-label="Go back">&larr; Back</button>
+      <span class="gf-lp-step-count" id="gf-lp-stepCount">Step 1 of 6</span>
     </div>
-    <div class="progress"><div class="progress-bar" id="bar"></div></div>
+    <div class="gf-lp-progress"><div class="gf-lp-progress-bar" id="gf-lp-bar"></div></div>
 
-    <div class="step active" data-step="1">
-      <p class="question">Hey! What's your name?</p>
-      <input class="field" type="text" id="name" placeholder="Your first name" autocomplete="given-name">
-      <button class="submit" onclick="submitName()">Continue</button>
-    </div>
-
-    <div class="step" data-step="2">
-      <p class="question" id="q2">What kind of debts are you looking to consolidate?</p>
-      <p class="multi-hint">Select all that apply</p>
-      <button class="option" onclick="toggleDebt(this,'Credit card')">Credit card</button>
-      <button class="option" onclick="toggleDebt(this,'Car loan')">Car loan</button>
-      <button class="option" onclick="toggleDebt(this,'Personal loan')">Personal loan</button>
-      <button class="option" onclick="toggleDebt(this,'Payday loans')">Payday loans</button>
-      <button class="option" onclick="toggleDebt(this,'Other')">Other</button>
-      <button class="submit" onclick="submitDebts()">Continue</button>
+    <div class="gf-lp-step gf-lp-active" data-step="1">
+      <p class="gf-lp-question">Hey! What's your name?</p>
+      <input class="gf-lp-field" type="text" id="gf-lp-name" placeholder="Your first name" autocomplete="given-name">
+      <button class="gf-lp-submit" onclick="gfLpSubmitName()">Continue</button>
     </div>
 
-    <div class="step" data-step="3">
-      <p class="question">What's your current employment?</p>
-      <button class="option" onclick="answer('employment','Self employed')">Self employed</button>
-      <button class="option" onclick="answer('employment','Full time')">Full time</button>
-      <button class="option" onclick="answer('employment','Part time')">Part time</button>
-      <button class="option" onclick="disqualify('employment','Centrelink')">Centrelink</button>
-      <button class="option" onclick="disqualify('employment','Unemployed')">Unemployed</button>
+    <div class="gf-lp-step" data-step="2">
+      <p class="gf-lp-question" id="gf-lp-q2">What kind of debts are you looking to consolidate?</p>
+      <p class="gf-lp-multi-hint">Select all that apply</p>
+      <button class="gf-lp-option" onclick="gfLpToggleDebt(this,'Credit card')">Credit card</button>
+      <button class="gf-lp-option" onclick="gfLpToggleDebt(this,'Car loan')">Car loan</button>
+      <button class="gf-lp-option" onclick="gfLpToggleDebt(this,'Personal loan')">Personal loan</button>
+      <button class="gf-lp-option" onclick="gfLpToggleDebt(this,'Payday loans')">Payday loans</button>
+      <button class="gf-lp-option" onclick="gfLpToggleDebt(this,'Other')">Other</button>
+      <button class="gf-lp-submit" onclick="gfLpSubmitDebts()">Continue</button>
     </div>
 
-    <div class="step" data-step="4">
-      <p class="question">What is your approximate household income?</p>
-      <button class="option" onclick="answer('income','30-50k')">$30k &ndash; $50k</button>
-      <button class="option" onclick="answer('income','50-80k')">$50k &ndash; $80k</button>
-      <button class="option" onclick="answer('income','80-100k')">$80k &ndash; $100k</button>
-      <button class="option" onclick="answer('income','100k+')">$100k+</button>
+    <div class="gf-lp-step" data-step="3">
+      <p class="gf-lp-question">What's your current employment?</p>
+      <button class="gf-lp-option" onclick="gfLpAnswer('employment','Self employed')">Self employed</button>
+      <button class="gf-lp-option" onclick="gfLpAnswer('employment','Full time')">Full time</button>
+      <button class="gf-lp-option" onclick="gfLpAnswer('employment','Part time')">Part time</button>
+      <button class="gf-lp-option" onclick="gfLpDisqualify('employment','Centrelink')">Centrelink</button>
+      <button class="gf-lp-option" onclick="gfLpDisqualify('employment','Unemployed')">Unemployed</button>
     </div>
 
-    <div class="step" data-step="5">
-      <p class="question">Do you have a mortgage?</p>
-      <button class="option" onclick="answer('mortgage','Yes')">Yes</button>
-      <button class="option" onclick="disqualify('mortgage','No')">No</button>
+    <div class="gf-lp-step" data-step="4">
+      <p class="gf-lp-question">What is your approximate household income?</p>
+      <button class="gf-lp-option" onclick="gfLpAnswer('income','30-50k')">$30k &ndash; $50k</button>
+      <button class="gf-lp-option" onclick="gfLpAnswer('income','50-80k')">$50k &ndash; $80k</button>
+      <button class="gf-lp-option" onclick="gfLpAnswer('income','80-100k')">$80k &ndash; $100k</button>
+      <button class="gf-lp-option" onclick="gfLpAnswer('income','100k+')">$100k+</button>
     </div>
 
-    <div class="step" data-step="6">
-      <p class="question">What's the mortgage size?</p>
-      <button class="option" onclick="answer('mortgageSize','300k or less')">$300k or less</button>
-      <button class="option" onclick="answer('mortgageSize','300k-500k')">$300k &ndash; $500k</button>
-      <button class="option" onclick="answer('mortgageSize','500k+')">$500k+</button>
+    <div class="gf-lp-step" data-step="5">
+      <p class="gf-lp-question">Do you have a mortgage?</p>
+      <button class="gf-lp-option" onclick="gfLpAnswer('mortgage','Yes')">Yes</button>
+      <button class="gf-lp-option" onclick="gfLpDisqualify('mortgage','No')">No</button>
     </div>
 
-    <div class="step" data-step="7">
-      <div class="badge">
+    <div class="gf-lp-step" data-step="6">
+      <p class="gf-lp-question">What's the mortgage size?</p>
+      <button class="gf-lp-option" onclick="gfLpAnswer('mortgageSize','300k or less')">$300k or less</button>
+      <button class="gf-lp-option" onclick="gfLpAnswer('mortgageSize','300k-500k')">$300k &ndash; $500k</button>
+      <button class="gf-lp-option" onclick="gfLpAnswer('mortgageSize','500k+')">$500k+</button>
+    </div>
+
+    <div class="gf-lp-step" data-step="7">
+      <div class="gf-lp-badge">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M20 6L9 17L4 12" stroke="#0e9f6e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <p class="final" id="congrats">Congrats, we can help! Book a time below to start saving on your repayments today!</p>
-      <p class="hint">No cost. No obligation.</p>
+      <p class="gf-lp-final" id="gf-lp-congrats">Congrats, we can help! Book a time below to start saving on your repayments today!</p>
+      <p class="gf-lp-hint">No cost. No obligation.</p>
       <iframe id="tuYSeKsHzMeQ4V5SDpA2_1787193419184" allow="payment" style="width:100%;border:none;min-height:900px;margin-top:16px;" title="Book your free call"></iframe>
     </div>
 
-    <div class="step" data-step="disqualified">
-      <p class="final">Sorry, it doesn't look like we're able to help with your situation right now.</p>
+    <div class="gf-lp-step" data-step="disqualified">
+      <p class="gf-lp-final">Sorry, it doesn't look like we're able to help with your situation right now.</p>
     </div>
   </div>
 
-  <p class="tagline">We've helped 100's of Aussies get their finances back on track!</p>
+  <p class="gf-lp-tagline">We've helped 100's of Aussies get their finances back on track!</p>
 
-  <p class="footer">&copy; Goal Finance. All Rights Reserved.</p>
+  <p class="gf-lp-footer">&copy; Goal Finance. All Rights Reserved.</p>
+
+</div>
 
 <script>
-  var current = 1;
-  var total = 7;
-  var stepHistory = [];
-  var bar = document.getElementById('bar');
-  var stepCount = document.getElementById('stepCount');
-  var backBtn = document.getElementById('backBtn');
-  var answers = {};
+  var gfLpCurrent = 1;
+  var gfLpTotal = 7;
+  var gfLpStepHistory = [];
+  var gfLpBar = document.getElementById('gf-lp-bar');
+  var gfLpStepCount = document.getElementById('gf-lp-stepCount');
+  var gfLpBackBtn = document.getElementById('gf-lp-backBtn');
+  var gfLpAnswers = {};
 
-  function render() {
-    document.querySelectorAll('.step').forEach(function(s){ s.classList.remove('active'); });
-    document.querySelector('.step[data-step="' + current + '"]').classList.add('active');
-    if (current === 'disqualified' || current === total) {
-      bar.style.width = '100%';
-      stepCount.textContent = '';
-      backBtn.classList.remove('show');
+  function gfLpRender() {
+    document.querySelectorAll('.gf-lp-step').forEach(function(s){ s.classList.remove('gf-lp-active'); });
+    document.querySelector('.gf-lp-step[data-step="' + gfLpCurrent + '"]').classList.add('gf-lp-active');
+    if (gfLpCurrent === 'disqualified' || gfLpCurrent === gfLpTotal) {
+      gfLpBar.style.width = '100%';
+      gfLpStepCount.textContent = '';
+      gfLpBackBtn.classList.remove('gf-lp-show');
     } else {
-      bar.style.width = ((current - 1) / (total - 1) * 100) + '%';
-      stepCount.textContent = 'Step ' + current + ' of ' + (total - 1);
-      backBtn.classList.toggle('show', stepHistory.length > 0);
+      gfLpBar.style.width = ((gfLpCurrent - 1) / (gfLpTotal - 1) * 100) + '%';
+      gfLpStepCount.textContent = 'Step ' + gfLpCurrent + ' of ' + (gfLpTotal - 1);
+      gfLpBackBtn.classList.toggle('gf-lp-show', gfLpStepHistory.length > 0);
     }
   }
 
-  function goTo(step) {
-    stepHistory.push(current);
-    current = step;
-    render();
+  function gfLpGoTo(step) {
+    gfLpStepHistory.push(gfLpCurrent);
+    gfLpCurrent = step;
+    gfLpRender();
   }
 
-  function goBack() {
-    if (!stepHistory.length) return;
-    current = stepHistory.pop();
-    render();
+  function gfLpGoBack() {
+    if (!gfLpStepHistory.length) return;
+    gfLpCurrent = gfLpStepHistory.pop();
+    gfLpRender();
   }
 
-  var selectedDebts = [];
+  var gfLpSelectedDebts = [];
 
-  function toggleDebt(btn, value) {
-    var i = selectedDebts.indexOf(value);
+  function gfLpToggleDebt(btn, value) {
+    var i = gfLpSelectedDebts.indexOf(value);
     if (i === -1) {
-      selectedDebts.push(value);
-      btn.classList.add('selected');
+      gfLpSelectedDebts.push(value);
+      btn.classList.add('gf-lp-selected');
     } else {
-      selectedDebts.splice(i, 1);
-      btn.classList.remove('selected');
+      gfLpSelectedDebts.splice(i, 1);
+      btn.classList.remove('gf-lp-selected');
     }
   }
 
-  function submitDebts() {
-    if (!selectedDebts.length) { alert('Please select at least one debt type.'); return; }
-    answers.debts = selectedDebts.join(', ');
-    goTo(3);
+  function gfLpSubmitDebts() {
+    if (!gfLpSelectedDebts.length) { alert('Please select at least one debt type.'); return; }
+    gfLpAnswers.debts = gfLpSelectedDebts.join(', ');
+    gfLpGoTo(3);
   }
 
-  function submitName() {
-    var name = document.getElementById('name').value.trim();
+  function gfLpSubmitName() {
+    var name = document.getElementById('gf-lp-name').value.trim();
     if (!name) { alert('Please enter your name.'); return; }
-    answers.name = name;
-    var q2 = document.getElementById('q2');
+    gfLpAnswers.name = name;
+    var q2 = document.getElementById('gf-lp-q2');
     q2.textContent = 'Nice to meet you, ' + name + '! What kind of debts are you looking to consolidate?';
-    goTo(2);
+    gfLpGoTo(2);
   }
 
-  function answer(key, value) {
-    answers[key] = value;
-    if (current === total - 1) {
+  function gfLpAnswer(key, value) {
+    gfLpAnswers[key] = value;
+    if (gfLpCurrent === gfLpTotal - 1) {
       // Send lead here (webhook/CRM endpoint):
-      // fetch('YOUR_WEBHOOK_URL', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(answers) });
-      var c = document.getElementById('congrats');
-      c.textContent = 'Congrats' + (answers.name ? ' ' + answers.name : '') + ', we can help! Book a time below to start saving on your repayments today!';
-      loadBookingCalendar();
+      // fetch('YOUR_WEBHOOK_URL', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(gfLpAnswers) });
+      var c = document.getElementById('gf-lp-congrats');
+      c.textContent = 'Congrats' + (gfLpAnswers.name ? ' ' + gfLpAnswers.name : '') + ', we can help! Book a time below to start saving on your repayments today!';
+      gfLpLoadBookingCalendar();
     }
-    goTo(current + 1);
+    gfLpGoTo(gfLpCurrent + 1);
   }
 
-  function loadBookingCalendar() {
+  function gfLpLoadBookingCalendar() {
     var frame = document.getElementById('tuYSeKsHzMeQ4V5SDpA2_1787193419184');
     if (frame.src) return;
     var params = new URLSearchParams();
-    if (answers.name) params.set('first_name', answers.name);
-    if (answers.debts) params.set('debt_type', answers.debts);
-    if (answers.employment) params.set('employment', answers.employment);
-    if (answers.income) params.set('household_income', answers.income);
-    if (answers.mortgage) params.set('mortgage', answers.mortgage);
-    if (answers.mortgageSize) params.set('mortgage_size', answers.mortgageSize);
+    if (gfLpAnswers.name) params.set('first_name', gfLpAnswers.name);
+    if (gfLpAnswers.debts) params.set('debt_type', gfLpAnswers.debts);
+    if (gfLpAnswers.employment) params.set('employment', gfLpAnswers.employment);
+    if (gfLpAnswers.income) params.set('household_income', gfLpAnswers.income);
+    if (gfLpAnswers.mortgage) params.set('mortgage', gfLpAnswers.mortgage);
+    if (gfLpAnswers.mortgageSize) params.set('mortgage_size', gfLpAnswers.mortgageSize);
     frame.src = 'https://api.leadconnectorhq.com/widget/booking/tuYSeKsHzMeQ4V5SDpA2?' + params.toString();
-    document.querySelector('.card').classList.add('card-booking');
+    document.querySelector('.gf-lp-card').classList.add('gf-lp-card-booking');
   }
 
-  function disqualify(key, value) {
-    answers[key] = value;
-    goTo('disqualified');
+  function gfLpDisqualify(key, value) {
+    gfLpAnswers[key] = value;
+    gfLpGoTo('disqualified');
   }
 
-  render();
+  gfLpRender();
 </script>
 <script src="https://link.msgsndr.com/js/form_embed.js" type="text/javascript"></script>
 ${includeVideo ? '<script src="https://player.vimeo.com/api/player.js"></script>\n' : ''}

@@ -113,6 +113,17 @@ export function renderLandingPage(variant) {
     margin-top: 14px;
   }
 
+  .gf-lp .gf-lp-cta-line {
+    color: var(--gf-lp-text);
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 1.4;
+    text-align: center;
+    text-wrap: balance;
+    max-width: 560px;
+    margin: 28px auto 0;
+  }
+
   .gf-lp .gf-lp-card {
     background: #fff;
     border-radius: 16px;
@@ -317,7 +328,9 @@ ${includeVideo ? videoStyles() : ''}</style>
   <h1 class="gf-lp-headline">We'll restructure your debts into one easy payment you can afford</h1>
   <p class="gf-lp-subline">T+C's Apply</p>
 
-${includeVideo ? videoBlock() : ''}  <div class="gf-lp-card">
+${includeVideo ? videoBlock() : ''}  <p class="gf-lp-cta-line">Book your free, complimentary strategy call below and we'll restructure your debt within the next three to seven days.</p>
+
+  <div class="gf-lp-card">
     <div class="gf-lp-card-top">
       <button class="gf-lp-back" id="gf-lp-backBtn" onclick="gfLpGoBack()" aria-label="Go back">&larr; Back</button>
       <span class="gf-lp-step-count" id="gf-lp-stepCount">Step 1 of 6</span>

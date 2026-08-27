@@ -328,7 +328,7 @@ ${includeVideo ? videoStyles() : ''}</style>
   <h1 class="gf-lp-headline">We'll restructure your debts into one easy payment you can afford</h1>
   <p class="gf-lp-subline">T+C's Apply</p>
 
-${includeVideo ? videoBlock() : ''}  <p class="gf-lp-cta-line">Book your free, complimentary strategy call below and we'll restructure your debt within the next three to seven days.</p>
+${includeVideo ? videoBlock() : ''}  <p class="gf-lp-cta-line">Book your free, complimentary strategy call below &mdash; we'll restructure your debt within the next three to seven days.</p>
 
   <div class="gf-lp-card">
     <div class="gf-lp-card-top">

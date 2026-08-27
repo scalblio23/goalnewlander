@@ -82,6 +82,17 @@ export function renderLandingPage(variant) {
     align-items: center;
     justify-content: center;
     padding: 32px 20px;
+    /* Full-bleed: page builders commonly wrap a Custom HTML element in a
+       "boxed" column with its own max-width, which would otherwise leave
+       the host page's background showing as white margins on both sides.
+       This breaks out to the full viewport width regardless of that
+       column's width, without needing any GHL settings changed. */
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
   }
 
   .gf-lp .gf-lp-headline {

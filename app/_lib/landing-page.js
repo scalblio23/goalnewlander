@@ -1,4 +1,51 @@
-<!DOCTYPE html>
+// Shared HTML template for the landing page. The A/B test only differs in
+// whether the Vimeo video embed is included (`includeVideo`) — everything
+// else (copy, styling, survey flow) is identical between variants.
+//
+// `variant` ('a' | 'b') is baked into the page's inline script so the
+// assigned variant travels with every answer the visitor submits.
+
+function videoBlock() {
+  return `  <div class="video-embed">
+    <div class="video-ratio">
+      <iframe src="https://player.vimeo.com/video/1221692348?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479&amp;autoplay=1&amp;muted=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="GoalFinance"></iframe>
+    </div>
+  </div>
+
+`;
+}
+
+function videoStyles() {
+  return `
+  .video-embed {
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto 28px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(17, 24, 39, 0.10);
+  }
+
+  .video-embed .video-ratio {
+    padding: 56.6% 0 0 0;
+    position: relative;
+  }
+
+  .video-embed iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+`;
+}
+
+export function renderLandingPage(variant) {
+  const includeVideo = variant === 'a';
+
+  return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -149,7 +196,7 @@
   }
 
   .option.selected::after {
-    content: '\2713';
+    content: '\\2713';
     float: right;
     color: var(--accent);
     font-weight: 700;
@@ -243,40 +290,11 @@
     .option, .progress-bar, .submit { transition: none; }
     .step.active { animation: none; }
   }
-
-  .video-embed {
-    width: 100%;
-    max-width: 640px;
-    margin: 0 auto 28px;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 10px 40px rgba(17, 24, 39, 0.10);
-  }
-
-  .video-embed .video-ratio {
-    padding: 56.6% 0 0 0;
-    position: relative;
-  }
-
-  .video-embed iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-  }
-</style>
+${includeVideo ? videoStyles() : ''}</style>
 </head>
 <body>
 
-  <div class="video-embed">
-    <div class="video-ratio">
-      <iframe src="https://player.vimeo.com/video/1221692348?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479&amp;autoplay=1&amp;muted=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="GoalFinance"></iframe>
-    </div>
-  </div>
-
-  <h1 class="headline">We'll restructure your debts into one easy payment you can afford</h1>
+${includeVideo ? videoBlock() : ''}  <h1 class="headline">We'll restructure your debts into one easy payment you can afford</h1>
   <p class="subline">T+C's Apply</p>
 
   <div class="card">
@@ -354,13 +372,17 @@
   <p class="footer">&copy; Goal Finance. All Rights Reserved.</p>
 
 <script>
+  // A/B test variant assigned by middleware (see /middleware.js). Included
+  // in the answers payload so conversion rate can be tracked per variant.
+  var AB_VARIANT = ${JSON.stringify(variant)};
+
   var current = 1;
   var total = 7;
   var stepHistory = [];
   var bar = document.getElementById('bar');
   var stepCount = document.getElementById('stepCount');
   var backBtn = document.getElementById('backBtn');
-  var answers = {};
+  var answers = { variant: AB_VARIANT };
 
   function render() {
     document.querySelectorAll('.step').forEach(function(s){ s.classList.remove('active'); });
@@ -419,7 +441,8 @@
   function answer(key, value) {
     answers[key] = value;
     if (current === total - 1) {
-      // Send lead here (webhook/CRM endpoint):
+      // Send lead here (webhook/CRM endpoint) — answers.variant carries the
+      // assigned A/B variant so conversion rate can be tracked per variant:
       // fetch('YOUR_WEBHOOK_URL', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(answers) });
       var c = document.getElementById('congrats');
       c.textContent = 'Congrats' + (answers.name ? ' ' + answers.name : '') + ', we can help! Book a time below to start saving on your repayments today!';
@@ -438,6 +461,7 @@
     if (answers.income) params.set('household_income', answers.income);
     if (answers.mortgage) params.set('mortgage', answers.mortgage);
     if (answers.mortgageSize) params.set('mortgage_size', answers.mortgageSize);
+    if (answers.variant) params.set('variant', answers.variant);
     frame.src = 'https://api.leadconnectorhq.com/widget/booking/tuYSeKsHzMeQ4V5SDpA2?' + params.toString();
     document.querySelector('.card').classList.add('card-booking');
   }
@@ -450,7 +474,8 @@
   render();
 </script>
 <script src="https://link.msgsndr.com/js/form_embed.js" type="text/javascript"></script>
-<script src="https://player.vimeo.com/api/player.js"></script>
-
+${includeVideo ? '<script src="https://player.vimeo.com/api/player.js"></script>\n' : ''}
 </body>
 </html>
+`;
+}

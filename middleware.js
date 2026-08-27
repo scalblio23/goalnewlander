@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 const COOKIE_NAME = 'ab_variant';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year, so returning visitors keep their variant
 
-export function middleware(request) {
+function pickVariant(request) {
   const { nextUrl } = request;
 
   // Manual override for QA/testing: ?variant=a or ?variant=b forces that
@@ -17,9 +17,25 @@ export function middleware(request) {
   const variant = forced
     ?? (existing === 'a' || existing === 'b' ? existing : (Math.random() < 0.5 ? 'a' : 'b'));
 
+  return { variant, forced, existing };
+}
+
+export function middleware(request) {
+  let variant, forced, existing;
+  try {
+    ({ variant, forced, existing } = pickVariant(request));
+  } catch (err) {
+    // Never let an unexpected error here take the whole page down — fall
+    // back to variant A rather than a hard 500 for the visitor.
+    console.error('ab-test middleware: assignment failed, falling back to variant a', err);
+    variant = 'a';
+    forced = null;
+    existing = undefined;
+  }
+
   // Rewrite (not redirect) so the visitor's URL bar always stays on "/" —
   // only the internally-served content differs per variant.
-  const url = nextUrl.clone();
+  const url = request.nextUrl.clone();
   url.pathname = variant === 'a' ? '/variant-a' : '/variant-b';
 
   const response = NextResponse.rewrite(url);

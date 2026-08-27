@@ -20,19 +20,7 @@ function pickVariant(request) {
   return { variant, forced, existing };
 }
 
-export function middleware(request) {
-  let variant, forced, existing;
-  try {
-    ({ variant, forced, existing } = pickVariant(request));
-  } catch (err) {
-    // Never let an unexpected error here take the whole page down — fall
-    // back to variant A rather than a hard 500 for the visitor.
-    console.error('ab-test middleware: assignment failed, falling back to variant a', err);
-    variant = 'a';
-    forced = null;
-    existing = undefined;
-  }
-
+function buildResponse(request, variant, forced, existing) {
   // Rewrite (not redirect) so the visitor's URL bar always stays on "/" —
   // only the internally-served content differs per variant.
   const url = request.nextUrl.clone();
@@ -56,6 +44,25 @@ export function middleware(request) {
   response.headers.set('Cache-Control', 'private, no-store');
 
   return response;
+}
+
+export function middleware(request) {
+  // Everything below — variant assignment AND building the rewrite/cookie/
+  // header response — is wrapped so nothing here can ever surface as a
+  // 500 to a visitor. Falls back to a bare variant-A rewrite, and if even
+  // that throws, lets the request through unmodified as an absolute floor.
+  try {
+    const { variant, forced, existing } = pickVariant(request);
+    return buildResponse(request, variant, forced, existing);
+  } catch (err) {
+    console.error('ab-test middleware crashed, falling back to variant a', err);
+    try {
+      return buildResponse(request, 'a', null, undefined);
+    } catch (err2) {
+      console.error('ab-test middleware fallback also crashed, passing request through', err2);
+      return NextResponse.next();
+    }
+  }
 }
 
 export const config = {

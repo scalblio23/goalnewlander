@@ -4,21 +4,30 @@ const COOKIE_NAME = 'ab_variant';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year, so returning visitors keep their variant
 
 export function middleware(request) {
+  const { nextUrl } = request;
+
+  // Manual override for QA/testing: ?variant=a or ?variant=b forces that
+  // variant for this request only. It never reads or writes the cookie, so
+  // it can't skew the real 50/50 split or clobber a visitor's real
+  // assignment — it's purely a preview.
+  const requestedOverride = nextUrl.searchParams.get('variant')?.toLowerCase();
+  const forced = requestedOverride === 'a' || requestedOverride === 'b' ? requestedOverride : null;
+
   const existing = request.cookies.get(COOKIE_NAME)?.value;
-  const variant = existing === 'a' || existing === 'b'
-    ? existing
-    : (Math.random() < 0.5 ? 'a' : 'b');
+  const variant = forced
+    ?? (existing === 'a' || existing === 'b' ? existing : (Math.random() < 0.5 ? 'a' : 'b'));
 
   // Rewrite (not redirect) so the visitor's URL bar always stays on "/" —
   // only the internally-served content differs per variant.
-  const url = request.nextUrl.clone();
+  const url = nextUrl.clone();
   url.pathname = variant === 'a' ? '/variant-a' : '/variant-b';
 
   const response = NextResponse.rewrite(url);
 
-  // Only (re)set the cookie when it wasn't already there, so repeat
-  // visitors keep seeing whichever variant they were first assigned.
-  if (existing !== variant) {
+  // Only (re)set the cookie for organic assignment when it wasn't already
+  // there, so repeat visitors keep seeing whichever variant they were first
+  // assigned — and a manual override never touches it.
+  if (!forced && existing !== variant) {
     response.cookies.set(COOKIE_NAME, variant, {
       path: '/',
       maxAge: COOKIE_MAX_AGE,

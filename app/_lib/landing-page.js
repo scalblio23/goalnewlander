@@ -30,7 +30,13 @@ function videoStyles() {
     margin: 28px auto 0;
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 10px 40px rgba(17, 24, 39, 0.10);
+    /* Depth shadow (unchanged) plus a soft glow in the brand accent
+       color, tying the video to the same green used on the CTA button
+       and progress bar, signaling "watch this" without looking gaudy. */
+    box-shadow:
+      0 10px 40px rgba(17, 24, 39, 0.10),
+      0 0 0 1px rgba(14, 159, 110, 0.15),
+      0 0 32px rgba(14, 159, 110, 0.30);
   }
 
   .gf-lp .gf-lp-video-embed .gf-lp-video-ratio {

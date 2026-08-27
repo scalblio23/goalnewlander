@@ -1,4 +1,49 @@
-<!DOCTYPE html>
+// Shared HTML template for the landing page. The A/B test only differs in
+// whether the Vimeo video embed is included (`includeVideo`) — everything
+// else (copy, styling, survey flow, booking widget) is byte-for-byte
+// identical between variants and untouched from the current production page.
+
+function videoBlock() {
+  return `  <div class="video-embed">
+    <div class="video-ratio">
+      <iframe src="https://player.vimeo.com/video/1221692348?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479&amp;autoplay=1&amp;muted=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="GoalFinance"></iframe>
+    </div>
+  </div>
+
+`;
+}
+
+function videoStyles() {
+  return `
+  .video-embed {
+    width: 100%;
+    max-width: 640px;
+    margin: 28px auto 0;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(17, 24, 39, 0.10);
+  }
+
+  .video-embed .video-ratio {
+    padding: 56.6% 0 0 0;
+    position: relative;
+  }
+
+  .video-embed iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+`;
+}
+
+export function renderLandingPage(variant) {
+  const includeVideo = variant === 'a';
+
+  return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -149,7 +194,7 @@
   }
 
   .option.selected::after {
-    content: '\2713';
+    content: '\\2713';
     float: right;
     color: var(--accent);
     font-weight: 700;
@@ -243,43 +288,14 @@
     .option, .progress-bar, .submit { transition: none; }
     .step.active { animation: none; }
   }
-
-  .video-embed {
-    width: 100%;
-    max-width: 640px;
-    margin: 28px auto 0;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 10px 40px rgba(17, 24, 39, 0.10);
-  }
-
-  .video-embed .video-ratio {
-    padding: 56.6% 0 0 0;
-    position: relative;
-  }
-
-  .video-embed iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-  }
-</style>
+${includeVideo ? videoStyles() : ''}</style>
 </head>
 <body>
 
   <h1 class="headline">We'll restructure your debts into one easy payment you can afford</h1>
   <p class="subline">T+C's Apply</p>
 
-  <div class="video-embed">
-    <div class="video-ratio">
-      <iframe src="https://player.vimeo.com/video/1221692348?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479&amp;autoplay=1&amp;muted=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="GoalFinance"></iframe>
-    </div>
-  </div>
-
-  <div class="card">
+${includeVideo ? videoBlock() : ''}  <div class="card">
     <div class="card-top">
       <button class="back" id="backBtn" onclick="goBack()" aria-label="Go back">&larr; Back</button>
       <span class="step-count" id="stepCount">Step 1 of 6</span>
@@ -450,7 +466,8 @@
   render();
 </script>
 <script src="https://link.msgsndr.com/js/form_embed.js" type="text/javascript"></script>
-<script src="https://player.vimeo.com/api/player.js"></script>
-
+${includeVideo ? '<script src="https://player.vimeo.com/api/player.js"></script>\n' : ''}
 </body>
 </html>
+`;
+}

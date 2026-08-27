@@ -1,7 +1,12 @@
 import { renderLandingPage } from '../_lib/landing-page';
 
-// No cookies, no request-dependent logic — this is pure static content,
-// so Next.js pre-renders it at build time like any other static page.
+// Content is fixed (no cookies, no request-dependent logic), but Vercel's
+// build output doesn't correctly publish a fully static custom Route
+// Handler in this setup — it 404s platform-side despite building and
+// serving fine locally. force-dynamic sidesteps that: same content,
+// computed per request instead of pre-rendered.
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   return new Response(renderLandingPage('a'), {
     headers: {

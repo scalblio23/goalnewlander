@@ -1,14 +1,11 @@
 import { renderLandingPage } from '../_lib/landing-page';
 
-// Never cache — the variant served here is only correct for visitors
-// middleware has already assigned to "a".
-export const dynamic = 'force-dynamic';
-
+// No cookies, no request-dependent logic — this is pure static content,
+// so Next.js pre-renders it at build time like any other static page.
 export async function GET() {
   return new Response(renderLandingPage('a'), {
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
-      'Cache-Control': 'private, no-store',
     },
   });
 }

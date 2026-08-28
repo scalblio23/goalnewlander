@@ -416,11 +416,18 @@
     goTo(2);
   }
 
+  function saveEntry(status) {
+    fetch('/api/submit-survey', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(Object.assign({}, answers, { status: status }))
+    }).catch(function (err) { console.error('Failed to save survey entry:', err); });
+  }
+
   function answer(key, value) {
     answers[key] = value;
     if (current === total - 1) {
-      // Send lead here (webhook/CRM endpoint):
-      // fetch('YOUR_WEBHOOK_URL', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(answers) });
+      saveEntry('qualified');
       var c = document.getElementById('congrats');
       c.textContent = 'Congrats' + (answers.name ? ' ' + answers.name : '') + ', we can help! Book a time below to start saving on your repayments today!';
       loadBookingCalendar();
@@ -444,6 +451,7 @@
 
   function disqualify(key, value) {
     answers[key] = value;
+    saveEntry('disqualified');
     goTo('disqualified');
   }
 

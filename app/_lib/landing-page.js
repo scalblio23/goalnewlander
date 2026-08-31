@@ -561,6 +561,30 @@ ${includeVideo ? videoBlock() : ''}  <p class="gf-lp-cta-line">Complete the shor
       })
     }).catch(function(e) { console.error('Lead backup error:', e); });
 
+    // Second, independent lead trigger (LeadConnector inbound webhook).
+    // Deliberately not chained to the fetch above -- each is fire-and-forget
+    // with its own .catch, so either one failing has no effect on the other;
+    // they're two parallel backups, not a primary/fallback pair.
+    fetch('https://services.leadconnectorhq.com/hooks/Q5JYtcCpswIQ9CmbAWcs/webhook-trigger/cb8956c7-7424-4410-b941-dccff62058ea', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        client: 'goal-finance',
+        fields: {
+          name: gfLpAnswers.name || '',
+          debts: gfLpAnswers.debts || '',
+          employment: gfLpAnswers.employment || '',
+          income: gfLpAnswers.income || '',
+          mortgage: gfLpAnswers.mortgage || '',
+          mortgageSize: gfLpAnswers.mortgageSize || '',
+          email: gfLpAnswers.email || '',
+          mobile: gfLpAnswers.mobile || '',
+          variant: variant,
+          pageUrl: window.location.href
+        }
+      })
+    }).catch(function(e) { console.error('Lead webhook error:', e); });
+
     if (typeof fbq === 'function') { fbq('track', 'Lead'); }
     var c = document.getElementById('gf-lp-congrats');
     c.textContent = 'Congrats' + (gfLpAnswers.name ? ' ' + gfLpAnswers.name : '') + ', we can help! Book a time below to start saving on your repayments today!';

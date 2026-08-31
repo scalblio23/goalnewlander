@@ -57,6 +57,7 @@ function videoStyles() {
 
 export function renderLandingPage(variant) {
   const includeVideo = variant === 'a';
+  const contactVariant = includeVideo ? 'video' : 'no-video';
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -264,6 +265,15 @@ src="https://www.facebook.com/tr?id=1399292305339502&ev=PageView&noscript=1"
   .gf-lp .gf-lp-field::placeholder { color: #9ca3af; }
   .gf-lp .gf-lp-field:focus { border-color: var(--gf-lp-accent); outline: none; }
 
+  .gf-lp .gf-lp-err {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #e0455e;
+    margin: -6px 0 12px;
+    min-height: 16px;
+  }
+
   .gf-lp .gf-lp-submit {
     display: block;
     width: 100%;
@@ -408,6 +418,15 @@ ${includeVideo ? videoBlock() : ''}  <p class="gf-lp-cta-line">Complete the shor
     </div>
 
     <div class="gf-lp-step" data-step="7">
+      <p class="gf-lp-question">Where should we send your offer?</p>
+      <p class="gf-lp-multi-hint">We'll use this to match you with the best offer</p>
+      <input class="gf-lp-field" type="email" id="gf-lp-email" placeholder="Email address" autocomplete="email">
+      <input class="gf-lp-field" type="tel" id="gf-lp-mobile" placeholder="Mobile number" autocomplete="tel">
+      <span class="gf-lp-err" id="gf-lp-contact-err"></span>
+      <button class="gf-lp-submit" onclick="gfLpSubmitContact('${contactVariant}')">See My Offer</button>
+    </div>
+
+    <div class="gf-lp-step" data-step="8">
       <div class="gf-lp-badge">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M20 6L9 17L4 12" stroke="#0e9f6e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -431,7 +450,7 @@ ${includeVideo ? videoBlock() : ''}  <p class="gf-lp-cta-line">Complete the shor
 
 <script>
   var gfLpCurrent = 1;
-  var gfLpTotal = 7;
+  var gfLpTotal = 8;
   var gfLpStepHistory = [];
   var gfLpBar = document.getElementById('gf-lp-bar');
   var gfLpStepCount = document.getElementById('gf-lp-stepCount');
@@ -494,14 +513,58 @@ ${includeVideo ? videoBlock() : ''}  <p class="gf-lp-cta-line">Complete the shor
 
   function gfLpAnswer(key, value) {
     gfLpAnswers[key] = value;
-    if (gfLpCurrent === gfLpTotal - 1) {
-      // Send lead here (webhook/CRM endpoint):
-      // fetch('YOUR_WEBHOOK_URL', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(gfLpAnswers) });
-      if (typeof fbq === 'function') { fbq('track', 'Lead'); }
-      var c = document.getElementById('gf-lp-congrats');
-      c.textContent = 'Congrats' + (gfLpAnswers.name ? ' ' + gfLpAnswers.name : '') + ', we can help! Book a time below to start saving on your repayments today!';
-      gfLpLoadBookingCalendar();
+    gfLpGoTo(gfLpCurrent + 1);
+  }
+
+  function gfLpSubmitContact(variant) {
+    var email = document.getElementById('gf-lp-email').value.trim();
+    var mobileRaw = document.getElementById('gf-lp-mobile').value.trim();
+    var err = document.getElementById('gf-lp-contact-err');
+    err.textContent = '';
+
+    if (!/^\\S+@\\S+\\.\\S+$/.test(email)) {
+      err.textContent = 'Please enter a valid email address.';
+      return;
     }
+    // Normalise +61 country code to leading 0, then check AU mobile format.
+    var digits = mobileRaw.replace(/\\D/g, '').replace(/^610?/, '0');
+    if (!/^04\\d{8}$/.test(digits)) {
+      err.textContent = 'Please enter a valid Australian mobile number.';
+      return;
+    }
+
+    gfLpAnswers.email = email;
+    gfLpAnswers.mobile = mobileRaw;
+
+    // Backup lead capture -- writes straight into the "Goal Finance -- Leads"
+    // Google Sheet via the shared /api/lead endpoint (independent of any
+    // GHL webhook/CRM automation). Fires here since this is now the final
+    // qualifying step -- everyone who reaches it has passed every
+    // qualifying question AND supplied contact details.
+    fetch('https://secure.fundd.finchecker.com.au/api/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        client: 'goal-finance',
+        fields: {
+          name: gfLpAnswers.name || '',
+          debts: gfLpAnswers.debts || '',
+          employment: gfLpAnswers.employment || '',
+          income: gfLpAnswers.income || '',
+          mortgage: gfLpAnswers.mortgage || '',
+          mortgageSize: gfLpAnswers.mortgageSize || '',
+          email: gfLpAnswers.email || '',
+          mobile: gfLpAnswers.mobile || '',
+          variant: variant,
+          pageUrl: window.location.href
+        }
+      })
+    }).catch(function(e) { console.error('Lead backup error:', e); });
+
+    if (typeof fbq === 'function') { fbq('track', 'Lead'); }
+    var c = document.getElementById('gf-lp-congrats');
+    c.textContent = 'Congrats' + (gfLpAnswers.name ? ' ' + gfLpAnswers.name : '') + ', we can help! Book a time below to start saving on your repayments today!';
+    gfLpLoadBookingCalendar();
     gfLpGoTo(gfLpCurrent + 1);
   }
 
@@ -510,6 +573,8 @@ ${includeVideo ? videoBlock() : ''}  <p class="gf-lp-cta-line">Complete the shor
     if (frame.src) return;
     var params = new URLSearchParams();
     if (gfLpAnswers.name) params.set('first_name', gfLpAnswers.name);
+    if (gfLpAnswers.email) params.set('email', gfLpAnswers.email);
+    if (gfLpAnswers.mobile) params.set('phone', gfLpAnswers.mobile);
     if (gfLpAnswers.debts) params.set('debt_type', gfLpAnswers.debts);
     if (gfLpAnswers.employment) params.set('employment', gfLpAnswers.employment);
     if (gfLpAnswers.income) params.set('household_income', gfLpAnswers.income);
